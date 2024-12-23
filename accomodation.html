@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Room Assignment System</title>
+</head>
+<body>
+
+    <h1>Hostel Room Assignment System</h1>
+
+    <!-- Admin UI Section -->
+    <div id="adminSection">
+        <h2>Admin Panel</h2>
+        <div>
+            <label for="hostelName">Hostel Name:</label>
+            <input type="text" id="hostelName" placeholder="Enter Hostel Name">
+            <button onclick="createHostel()">Create Hostel</button>
+        </div>
+
+        <div>
+            <label for="blockRange">Block ID (Range):</label>
+            <input type="number" id="blockMin" placeholder="Enter Block Min">
+            <span>-</span>
+            <input type="number" id="blockMax" placeholder="Enter Block Max">
+        </div>
+        <div>
+            <label for="blockName">Block Name:</label>
+            <input type="text" id="blockName" placeholder="Enter Block Name">
+        </div>
+        <button onclick="addBlock()">Add Block</button>
+
+        <h3>Available Hostels:</h3>
+        <ul id="hostelsList"></ul>
+    </div>
+
+    <hr>
+
+    <!-- Person UI Section -->
+    <div id="personSection">
+        <h2>Person Panel</h2>
+        <div>
+            <label for="personName">Your Name:</label>
+            <input type="text" id="personName" placeholder="Enter Your Name">
+        </div>
+        <div>
+            <label for="selectHostel">Select Hostel:</label>
+            <select id="selectHostel"></select>
+        </div>
+        <button onclick="assignRoom()">Get Assigned Room</button>
+
+        <h3>Assigned People:</h3>
+        <ul id="assignedPeopleList"></ul>
+
+        <h3>Previous Room Assignments:</h3>
+        <ul id="previousRoomList"></ul>
+    </div>
+
+    <script>
+        let storedArr = [];  // Array to store all persons' data
+        let previousRoom = [];  // Array to store block and room given to each person
+
+        // Hostel class to manage blocks and assigned rooms
+        class Hostel {
+            constructor(name) {
+                this.name = name;
+                this.blocks = {};  // Dynamically store blocks and their room assignments
+            }
+
+            addBlock(blockIdMin, blockIdMax, blockName) {
+                const blockIds = [];
+                for (let i = blockIdMin; i <= blockIdMax; i++) {
+                    blockIds.push(i);  // Add all block IDs in the range
+                }
+
+                blockIds.forEach(blockId => {
+                    this.blocks[blockId] = {
+                        name: blockName,
+                        assignedRooms: []  // Track rooms already assigned in this block
+                    };
+                });
+            }
+
+            generateRoom(blockId) {
+                let room;
+                const assignedRooms = this.blocks[blockId].assignedRooms;
+
+                // Generate room randomly (1-2 for each block)
+                let availableRooms = [1, 2];  // Room options: 1 and 2
+                availableRooms = availableRooms.filter(room => !assignedRooms.includes(room));
+
+                if (availableRooms.length === 0) {
+                    return null;  // No rooms left in this block
+                }
+
+                room = availableRooms[Math.floor(Math.random() * availableRooms.length)];  // Randomly pick a room
+                assignedRooms.push(room);  // Assign the room
+                return room;
+            }
+
+            isBlockFull(blockId) {
+                return this.blocks[blockId].assignedRooms.length >= 2;  // Block is full if all rooms are assigned
+            }
+        }
+
+        // Person class that can choose a hostel and be assigned a block and room
+        class Person {
+            constructor(name, hostel) {
+                this.name = name;
+                this.hostel = hostel;
+
+                let block, room;
+                const blockIds = Object.keys(hostel.blocks);
+                let availableBlocks = blockIds.filter(blockId => !hostel.isBlockFull(blockId));
+
+                if (availableBlocks.length === 0) {
+                    return noRoom(name);  // If no available blocks, trigger noRoom
+                }
+
+                block = availableBlocks[Math.floor(Math.random() * availableBlocks.length)];  // Randomly choose a block
+                room = hostel.generateRoom(block);
+
+                if (room === null) {
+                    return noRoom(name);  // If no room available in the selected block, trigger noRoom
+                }
+
+                this.block = block;
+                this.room = room;
+                storedArr.push(this);  // Store person data in storedArr
+                previousRoom.push({ block: this.block, room: this.room, hostel: this.hostel.name });  // Store block and room in previousRoom
+            }
+        }
+
+        // Function to handle when no room is available
+        function noRoom(name) {
+            alert(`There is no more available room for ${name}.`);
+        }
+
+        // Admin class to input hostels, blocks, and room ranges
+        class Admin {
+            constructor() {
+                this.hostels = [];
+            }
+
+            // Create a new hostel
+            createHostel(hostelName) {
+                const newHostel = new Hostel(hostelName);
+                this.hostels.push(newHostel);
+                return newHostel;  // Return the created hostel to add blocks to it
+            }
+
+            // Add blocks to the hostel
+            addBlockToHostel(hostel, blockIdMin, blockIdMax, blockName) {
+                hostel.addBlock(blockIdMin, blockIdMax, blockName);
+            }
+
+            // List all hostels
+            listHostels() {
+                return this.hostels.map(hostel => hostel.name);
+            }
+        }
+
+        // Initialize Admin
+        const admin = new Admin();
+
+        // Function to create a hostel from Admin UI
+        function createHostel() {
+            const hostelName = document.getElementById('hostelName').value;
+            if (hostelName) {
+                const newHostel = admin.createHostel(hostelName);
+                displayHostels();
+                alert(`Hostel ${hostelName} created successfully!`);
+            } else {
+                alert("Please enter a hostel name.");
+            }
+        }
+
+        // Function to add a block to the hostel
+        function addBlock() {
+            const hostelName = document.getElementById('hostelName').value;
+            const blockMin = parseInt(document.getElementById('blockMin').value);
+            const blockMax = parseInt(document.getElementById('blockMax').value);
+            const blockName = document.getElementById('blockName').value;
+
+            if (hostelName && blockMin && blockMax && blockName) {
+                const hostel = admin.hostels.find(hostel => hostel.name === hostelName);
+                if (hostel) {
+                    admin.addBlockToHostel(hostel, blockMin, blockMax, blockName);
+                    alert(`Block ${blockName} added to ${hostelName}`);
+                    displayHostels();
+                } else {
+                    alert("Hostel not found.");
+                }
+            } else {
+                alert("Please fill out all block details.");
+            }
+        }
+
+        // Function to display hostels
+        function displayHostels() {
+            const hostelsListElement = document.getElementById('hostelsList');
+            const selectHostelElement = document.getElementById('selectHostel');
+            hostelsListElement.innerHTML = "";
+            selectHostelElement.innerHTML = "";  // Clear the select dropdown
+
+            admin.hostels.forEach(hostel => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${hostel.name}`;
+                hostelsListElement.appendChild(listItem);
+
+                // Add hostel to dropdown
+                const option = document.createElement('option');
+                option.value = hostel.name;
+                option.textContent = hostel.name;
+                selectHostelElement.appendChild(option);
+            });
+        }
+
+        // Function to assign a room to a person from Person UI
+        function assignRoom() {
+            const personName = document.getElementById('personName').value;
+            const selectedHostelName = document.getElementById('selectHostel').value;
+
+            if (personName && selectedHostelName) {
+                const selectedHostel = admin.hostels.find(hostel => hostel.name === selectedHostelName);
+                if (selectedHostel) {
+                    const person = new Person(personName, selectedHostel);
+                    displayAssignedPeople();
+                    displayPreviousRoomAssignments();
+                } else {
+                    alert("Hostel not found.");
+                }
+            } else {
+                alert("Please fill out all fields.");
+            }
+        }
+
+        // Function to display assigned people
+        function displayAssignedPeople() {
+            const assignedPeopleList = document.getElementById('assignedPeopleList');
+            assignedPeopleList.innerHTML = "";
+            storedArr.forEach(person => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${person.name} assigned to Room: ${person.room}, Block: ${person.block}, Hostel: ${person.hostel.name}`;
+                assignedPeopleList.appendChild(listItem);
+            });
+        }
+
+        // Function to display previous room assignments
+        function displayPreviousRoomAssignments() {
+            const previousRoomList = document.getElementById('previousRoomList');
+            previousRoomList.innerHTML = "";
+            previousRoom.forEach(entry => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Block: ${entry.block}, Room: ${entry.room}, Hostel: ${entry.hostel}`;
+                previousRoomList.appendChild(listItem);
+            });
+        }
+    </script>
+
+</body>
+</html>
