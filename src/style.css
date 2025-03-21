@@ -1,0 +1,200 @@
+/* Global Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: rgb(252, 216, 228); /* Background for the whole page */
+    display: flex;
+}
+
+/* Navbar Styling */
+.navbar {
+    width: 250px;
+    background-color: white;
+    height: 100vh;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: -250px; /* Hide the navbar by default */
+    z-index: 1;
+    transition: left 0.3s ease; /* Smooth transition */
+}
+
+.navbar.active {
+    left: 0; /* Move the navbar into view */
+}
+
+.menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+/* Main Content Adjusted */
+.main-content {
+    margin-left: 20px; /* Adjust to account for the menu icon */
+    padding: 20px;
+    transition: margin-left 0.3s ease; /* Smooth transition */
+}
+
+.navbar.active ~ .main-content {
+    margin-left: 270px; /* Adjust space when the navbar is visible */
+}
+
+.navbar h3 {
+    color: black;
+    margin-bottom: 20px;
+    padding: 10%;
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.navbar ul li {
+    margin: 15px 0;
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    color: black; /* White text */
+    font-size: 18px;
+    transition: color 0.3s;
+    background-color: white; /* Ensures grey background */
+    padding: 10px;
+    display: block; /* Makes entire link clickable */
+}
+
+.navbar ul li a:hover {
+    color: rgb(252, 216, 228);;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 270px; /* Leave space for the navbar */
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    gap: 20px;
+    margin-top: 20%;
+    margin-left: 15%;
+    margin-right: 15%;
+    position: relative; /* Add relative positioning for the container */
+}
+
+/* Product container styles */
+/* Product container styles */
+.product {
+    flex: 1 1 200px;
+    text-align: center;
+    border: 2px solid rgb(111, 14, 14);
+    border-radius: 10px;
+    padding: 15px;
+    max-width: 200px;
+    background-color: white;
+    position: relative; /* Ensure z-index control for internal elements */
+    margin-bottom: 50px;
+}
+
+/* Style the images and bring them forward */
+.product img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    z-index: 1; /* Bring images forward */
+    position: relative; /* Ensure z-index works on image */
+}
+
+/* Product Name styling: make it go above the container */
+.product-name {
+    background-color: white; /* Set name background to white */
+    z-index: 2; /* Ensure it's visible above other content */
+    width: 80%; /* Optional: Set a width for the name box */
+    text-align: center; /* Center the name text */
+    
+}
+
+/* Price styling: make it go under the container */
+.product p {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgb(252, 216, 228);
+    position: absolute; /* Use absolute positioning to move it */
+    bottom: -30px; /* Position it below the container */
+    left: 50%; /* Center it horizontally */
+    transform: translateX(-50%); /* Adjust for exact centering */
+    z-index: 2;
+    width: 80%;
+    text-align: center;
+}
+
+
+/* Hero section */
+.hero {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.contact,
+.about {
+    text-align: center;
+    padding: 15px;
+}
+
+.test {
+    text-align: center;
+    padding: 15px;
+}
+
+/* Media Queries for smaller devices */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .product {
+        max-width: 90%;
+        margin-bottom: 50px; /* Ensure space for price under the container */
+    }
+
+    .footer {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    nav {
+        text-align: center;
+    }
+
+    .product img {
+        max-width: 100%;
+    }
+
+    .hero h4 {
+        font-size: 18px;
+    }
+}
