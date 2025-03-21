@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <title>Room Assignment</title>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <h1>Welcome to Room Assignment</h1>
+        <span class="profile">Profile</span>
+    </header>
+
+    <!-- Sidebar Section -->
+    <aside class="bar">
+        <p>My name is Glory</p>
+        <p>My name is Glory</p>
+        <p>My name is Glory</p>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="container">
+        <!-- Board content -->
+        <div class="board">
+            <p>Welcome to the room assignment dashboard</p>
+        </div>
+    </main>
+
+    <!-- Centered content for room assignment -->
+    <main class="content">
+        <div class="bat">
+            <h2>Assign Room</h2>
+            <form id="assignForm">
+                <label for="personName">Person's Name: </label>
+                <input type="text" id="personName" placeholder="Enter person's name" required />
+
+                <label for="hostelSelect">Choose Hostel: </label>
+                <select id="hostelSelect" required>
+                    <!-- Dynamically populated hostel options -->
+                </select>
+
+                <button type="submit">Assign Room</button>
+            </form>
+            <div id="assignmentResult"></div>
+        </div>
+    </main>
+
+    <script src="studentAssignment.js"></script>
+</body>
+
+</html>
